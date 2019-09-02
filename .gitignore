@@ -1,0 +1,7 @@
+**/.idea/
+**/__pycache__
+**/experiment_dir/
+**/data/
+**/MNIST
+**/genMNIST
+*.pkl
