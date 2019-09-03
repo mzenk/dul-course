@@ -12,7 +12,9 @@ def to_gaussian_params(x, scalar_var=False):
     """
     if scalar_var:
         mu, var = torch.split(x, [x.shape[1] - 1, 1], dim=1)
-    mu, var = torch.split(x, x.shape[1]//2, dim=1)
+        var = var.expand(-1, mu.shape[1])
+    else:
+        mu, var = torch.split(x, x.shape[1]//2, dim=1)
     # make variances positive
     var = F.softplus(var) + 1e-8
     return mu, var

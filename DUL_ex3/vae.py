@@ -4,11 +4,14 @@ from networks import NetA, NetB
 import util as ut
 
 
-class VAEtypeA(nn.Module):
-    def __init__(self):
-        super(VAEtypeA, self).__init__()
+class VAE2D(nn.Module):
+    def __init__(self, dec_type=''):
+        super(VAE2D, self).__init__()
         self.enc = Encoder2D()
-        self.dec = DecoderA2D()
+        if dec_type == 'B':
+            self.dec = DecoderB2D()
+        else:
+            self.dec = DecoderA2D()
         self.register_buffer('prior_mu', torch.zeros(2))
         self.register_buffer('prior_var', torch.ones(2))
 
@@ -36,7 +39,8 @@ class VAEtypeA(nn.Module):
         return self.sample_x_from_z(self.sample_z(num_samples))
 
     def sample_x_from_z(self, z):
-        return ut.sample_gaussian(*self.dec(z))
+        mu, var = self.dec(z)
+        return ut.sample_gaussian(mu, var), mu
 
 
 class Encoder2D(nn.Module):
@@ -68,7 +72,7 @@ class DecoderB2D(nn.Module):
 
     def forward(self, input):
         output = self.net(input)
-        mu, var = ut.to_gaussian_params(output)
+        mu, var = ut.to_gaussian_params(output, scalar_var=True)
         return mu, var
 
 
